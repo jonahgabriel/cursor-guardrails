@@ -129,12 +129,12 @@ def update_dockerfile(container_name: str, new_version: str) -> None:
         # Add version labels if they don't exist
         label_section = f"""
 # Add version labels
-LABEL org.opencontainers.image.title="{container_name.capitalize()} Service" \\
-      org.opencontainers.image.description="{container_name.capitalize()} service" \\
-      org.opencontainers.image.version="{new_version}" \\
-      org.opencontainers.image.vendor="AI Development Team" \\
-      org.opencontainers.image.created="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \\
-      org.opencontainers.image.source="https://github.com/yourusername/ai-dev"
+LABEL org.opencontainers.image.title="{container_name.capitalize()} Service" \
+      org.opencontainers.image.description="{container_name.capitalize()} service" \
+      org.opencontainers.image.version="{new_version}" \
+      org.opencontainers.image.vendor="AI Development Team" \
+      org.opencontainers.image.created="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+      org.opencontainers.image.source="https://github.com/organization/project"
 """
         # Insert after the ENV sections
         env_pattern = r'(ENV\s+[^\n]+\n\s*(?:ENV\s+[^\n]+\n\s*)*)'
