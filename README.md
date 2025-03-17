@@ -8,6 +8,8 @@ A comprehensive validation and standardization system for development environmen
 
 > **Important**: While these guardrails help maintain consistency, it's crucial to understand that Cursor is an AI assistant that may need frequent reminders about rules and procedures. The checklists and validation rules serve as a structured way to keep Cursor focused and on track with the intended development goals. Think of them as a "conversation guide" that helps maintain consistency in development practices.
 
+> **Disclaimer**: I am not an expert in all aspects of development, and this repository is a living document of what has worked for me in my journey. I am constantly learning and updating these rules as I discover better practices or encounter new challenges. The rules in the `rules/` directory are regularly updated and revised based on my experiences and feedback. While I strive to maintain high standards, these rules should be viewed as a starting point rather than definitive guidelines. Your expertise and specific needs may lead you to different, equally valid approaches.
+
 ## Table of Contents
 - [Overview](#overview)
 - [Preplanning and Requirements](#preplanning-and-requirements)
