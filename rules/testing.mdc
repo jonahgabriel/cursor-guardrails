@@ -1,0 +1,119 @@
+---
+description: Rules for test organization, execution, and coverage
+globs: ["**/tests/**/*.py", "**/conftest.py", "**/pytest.ini"]
+alwaysApply: true
+---
+
+# Testing Rules
+
+## Framework
+
+- Use pytest (>=8.3.4)
+- Required packages:
+  - pytest_asyncio (>=0.25.3)
+  - pytest_cov (>=6.0.0)
+  - pytest_timeout (>=2.2.0)
+  - pytest_docker (>=3.1.1)
+  - pytest_mock (>=3.12.0)
+  - pytest_xdist (>=3.5.0)
+
+## Organization
+
+### Directory Structure
+
+- tests/unit/ - Unit tests
+- tests/integration/ - Integration tests
+- tests/e2e/ - End-to-end tests
+- tests/fixtures/ - Test fixtures
+- tests/mocks/ - Mock objects
+- tests/utils/ - Test utilities
+- conftest.py - Shared fixtures
+
+### Naming
+
+- Test files: "test_*.py"
+- Test functions: "test_*"
+- Fixtures: "*_fixture.py"
+- Mocks: "mock_*.py"
+
+## Execution
+
+- ALWAYS use run_tests.py for test execution
+- Run tests from the project root
+- Tests will automatically be run in the dev container
+- Always use --asyncio-mode=auto for async tests
+- Never run tests directly on host system without run_tests.py
+
+### Commands
+
+- Run all tests for a container:
+  ```
+  python run_tests.py [container_name]
+  ```
+
+- Run specific test type:
+  ```
+  python run_tests.py [container_name] --type unit
+  python run_tests.py [container_name] --type integration
+  python run_tests.py [container_name] --type e2e
+  ```
+
+- Run specific test path:
+  ```
+  python run_tests.py [container_name] --path tests/unit/test_specific.py
+  ```
+
+- Run with extra arguments (like coverage):
+  ```
+  python run_tests.py [container_name] --extra "--cov=src --cov-report=html"
+  ```
+
+## Standard Test Commands
+
+- Unit tests: `python run_tests.py foundation --type unit --extra "--asyncio-mode=auto --log-cli-level=INFO"`
+- Integration tests: `python run_tests.py foundation --type integration --extra "--asyncio-mode=auto --log-cli-level=INFO"`
+- E2E tests: `python run_tests.py foundation --type e2e --extra "--asyncio-mode=auto --log-cli-level=INFO"`
+- Specific test: `python run_tests.py foundation --path [test_path] --extra "--asyncio-mode=auto --log-cli-level=INFO"`
+- With coverage: `python run_tests.py foundation --path tests/ --extra "--cov --cov-report=term-missing"`
+
+## Haystack-MCP Test Examples
+
+- Run all Haystack-MCP unit tests:
+  ```
+  python run_tests.py haystack-mcp --type unit
+  ```
+
+- Run specific modules in Haystack-MCP:
+  ```
+  python run_tests.py haystack-mcp --path "tests/unit/tools/ tests/unit/protocol/"
+  ```
+
+- Run tests for Cursor integration:
+  ```
+  python run_tests.py haystack-mcp --path "tests/unit/integrations/test_cursor_integration.py"
+  ```
+
+- Run tests with coverage for Haystack-MCP:
+  ```
+  python run_tests.py haystack-mcp --type unit --extra "--cov=src/haystack_mcp --cov-report=html"
+  ```
+
+## Alternative Execution from Container Directory
+
+If working directly in the container directory, you can also use:
+
+```bash
+# From the haystack-mcp container directory
+./run_tests.sh --type unit
+./run_tests.sh --path "tests/unit/tools/"
+./run_tests.sh --path "tests/unit/integrations/test_cursor_integration.py"
+```
+
+## Best Practices
+
+- One assertion per test when possible
+- Use descriptive test names
+- Isolate test dependencies
+- Clean up test data
+- Mock external services
+- Include both positive and negative test cases

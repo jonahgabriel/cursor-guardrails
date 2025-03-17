@@ -1,0 +1,124 @@
+---
+description: Rules for security, access control, and data protection
+globs: ["**/*.py", "**/security/**", "**/auth/**"]
+alwaysApply: true
+---
+
+# Security Rules
+
+## AI Model Security
+
+- Validate all inputs to AI models with strict sanitization
+- Implement rate limiting for model inference endpoints
+- Support offline mode operation for sensitive environments
+- Establish guardrails for model outputs and reasoning
+- Document model limitations and potential vulnerabilities
+
+## Secrets Management
+
+- Storage: Use environment variables for secrets in containers
+- Never store secrets in:
+  - Source code
+  - Logs
+  - Comments
+  - Configuration files
+- Use secure vaults for credential storage in production
+
+## API Security
+
+- Implement proper authentication for all endpoints
+- Use role-based access control for API operations
+- Generate audit logs for sensitive operations
+- Set appropriate CORS policies
+- Implement API rate limiting and throttling
+
+## Data Protection
+
+- Apply encryption for data at rest and in transit
+- Implement data minimization principles
+- Support anonymization for sensitive information
+- Provide clear data retention policies
+- Ensure proper access controls for user data
+
+## Banned Functions
+
+The following functions and practices are prohibited:
+- `eval`, `exec` for dynamic code execution
+- `os.system` and shell injection vectors
+- Hardcoded credentials
+- Disabling SSL verification
+- Overly permissive file permissions
+```
+
+## 9. Update for `performance.mdc` (New File)
+
+**Why this file is needed:**
+Based on the OPTIMIZATION_STRATEGY.md document in the codebase, performance optimization is a key concern that deserves dedicated rules.
+
+**Suggested new file:**
+
+```markdown:.cursor/rules/performance.mdc
+---
+description: Rules for performance optimization, resource management, and scaling
+globs: ["**/*.py", "**/benchmarks/**"]
+alwaysApply: true
+---
+
+# Performance Optimization Rules
+
+## Database Optimization
+
+- Use connection pooling with appropriate settings:
+  ```python
+  engine = create_engine(
+      DATABASE_URL,
+      pool_size=20,
+      max_overflow=30,
+      pool_timeout=30,
+      pool_recycle=1800,
+      pool_pre_ping=True
+  )
+  ```
+- Implement statement caching
+- Use batched operations for bulk processing
+- Implement efficient pagination through keyset pagination
+
+## Resource Management
+
+- Configure appropriate resource limits for containers:
+  ```yaml
+  deploy:
+    resources:
+      limits:
+        cpus: '2'
+        memory: 2G
+      reservations:
+        cpus: '1'
+        memory: 1G
+  ```
+- Implement resource monitoring and alerts
+- Use async/await for I/O-bound operations
+- Optimize memory usage in high-throughput components
+
+## Caching Strategy
+
+- Implement appropriate caching layers:
+  - In-memory caching for frequent computations
+  - Redis caching for shared application state
+  - Content caching for static assets
+- Document cache invalidation strategies
+- Implement cache warming for critical paths
+
+## Asynchronous Processing
+
+- Use task queues for long-running operations
+- Implement circuit breakers for external dependencies
+- Batch related operations where possible
+- Use streaming for large data transfers
+
+## Benchmarking
+
+- Establish performance baselines for critical operations
+- Implement automated performance testing
+- Document expected performance characteristics
+- Set alerts for performance degradation

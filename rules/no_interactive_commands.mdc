@@ -1,0 +1,40 @@
+---
+description: Do not use interactive commands with Docker containers, prefer non-blocking alternatives
+globs: ["**/Dockerfile*", "**/*.sh", "**/docker-compose*.yml", "**/README.md"]
+alwaysApply: true
+---
+
+# No Interactive Container Commands
+
+## Prohibited Commands
+
+- **Interactive Container Logs**: Do not use `docker logs -f` or `docker-compose logs -f`
+- **Interactive Shells**: Do not use `docker exec -it` or `docker-compose exec` without specific exit conditions
+- **Watching Process Output**: Avoid `tail -f`, `watch`, or other commands that don't terminate automatically
+
+## Recommended Alternatives
+
+- **Container Logs**: Use `docker logs --tail=100` or redirect to a file with `docker logs > container.log`
+- **Command Execution**: Use non-interactive mode: `docker exec container_name command` (without -it flags)
+- **Automated Output Capture**: 
+  
+  # Instead of: docker logs -f container
+  # Use:
+  docker logs --tail=100 container
+  # Or with timestamps:
+  docker logs --tail=100 --timestamps container
+  
+
+## Rationale
+
+Interactive commands:
+1. Block automation scripts indefinitely
+2. Prevent clean CI/CD pipeline execution
+3. Make logs harder to capture and analyze
+4. Create inconsistent behavior between development and production
+
+## Exceptions
+
+The only permitted exceptions are:
+- Debugging instructions that explicitly instruct users to enter/exit interactive modes
+- Development environment setup with clear instructions for termination

@@ -1,0 +1,64 @@
+---
+description: Rules for performance optimization, resource management, and scaling
+globs: ["**/*.py", "**/benchmarks/**"]
+alwaysApply: true
+---
+
+# Performance Optimization Rules
+
+## Database Optimization
+
+- Use connection pooling with appropriate settings:
+  ```python
+  engine = create_engine(
+      DATABASE_URL,
+      pool_size=20,
+      max_overflow=30,
+      pool_timeout=30,
+      pool_recycle=1800,
+      pool_pre_ping=True
+  )
+  ```
+- Implement statement caching
+- Use batched operations for bulk processing
+- Implement efficient pagination through keyset pagination
+
+## Resource Management
+
+- Configure appropriate resource limits for containers:
+  ```yaml
+  deploy:
+    resources:
+      limits:
+        cpus: '2'
+        memory: 2G
+      reservations:
+        cpus: '1'
+        memory: 1G
+  ```
+- Implement resource monitoring and alerts
+- Use async/await for I/O-bound operations
+- Optimize memory usage in high-throughput components
+
+## Caching Strategy
+
+- Implement appropriate caching layers:
+  - In-memory caching for frequent computations
+  - Redis caching for shared application state
+  - Content caching for static assets
+- Document cache invalidation strategies
+- Implement cache warming for critical paths
+
+## Asynchronous Processing
+
+- Use task queues for long-running operations
+- Implement circuit breakers for external dependencies
+- Batch related operations where possible
+- Use streaming for large data transfers
+
+## Benchmarking
+
+- Establish performance baselines for critical operations
+- Implement automated performance testing
+- Document expected performance characteristics
+- Set alerts for performance degradation 

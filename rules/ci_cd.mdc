@@ -1,0 +1,40 @@
+---
+description: Rules for continuous integration and deployment processes
+globs: [".github/workflows/**", "**/Jenkinsfile", ".gitlab-ci.yml"]
+alwaysApply: true
+---
+
+# CI/CD Rules
+
+## Required Checks
+
+All CI pipelines must include:
+- lint
+- test
+- security_scan
+- build
+
+## Deployment
+
+### Environments
+- dev
+- staging
+- prod
+
+### Approval Requirements
+- staging: approval required
+- prod: approval required
+
+## Integration
+
+### CI Integration
+Required steps:
+- run all test categories
+- generate coverage reports
+- fail on coverage decrease
+- publish test results
+
+### Artifacts
+- coverage reports
+- test logs
+- performance metrics

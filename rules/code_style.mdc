@@ -1,0 +1,28 @@
+---
+description: Code style and formatting rules for consistent development
+globs: ["**/*.py", "**/*.ts", "**/*.js"]
+alwaysApply: true
+---
+
+# Code Style Rules
+
+## Python
+
+- Line length: 88 (Match black formatter)
+- Quotes: Double quotes for strings
+- Docstring: Google style
+- Imports:
+  - Order: stdlib, third_party, first_party, local
+  - Group by type: true
+  - Banned: 
+    - "from .. import *" (No relative imports)
+    - "import *" (No wildcard imports)
+- Indent:
+  - Style: space
+  - Size: 4
+
+## TypeScript
+
+- Quotes: single
+- Semicolons: required
+- Indent: 2 spaces

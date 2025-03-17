@@ -1,0 +1,63 @@
+---
+description: Rules for error handling, logging, and exception management
+globs: ["**/*.py"]
+alwaysApply: true
+---
+
+# Error Handling Rules
+
+## Messaging Error Handling
+
+- Implement dead letter handling for failed message processing
+- Log complete message context on errors
+- Include retry logic with exponential backoff for transient failures
+- Implement circuit breakers for external service dependencies
+
+## Logging
+
+- Required fields in error logs:
+  - timestamp
+  - error_type
+  - message
+  - stack_trace
+  - container_name
+  - service_name
+  - correlation_id (for tracing requests)
+
+## Custom Exceptions
+
+- Base class: AppError
+- Implement proper exception hierarchy:
+  ```
+  AppError
+  ├── ValidationError
+  ├── ServiceError
+  │   ├── DatabaseError
+  │   ├── MessagingError
+  │   └── ExternalServiceError
+  ├── ConfigurationError
+  └── ResourceError
+  ```
+
+## Error Response Format
+
+API error responses must follow standard format:
+```json
+{
+  "status": false,
+  "error": "error_code",
+  "message": "Human readable message",
+  "details": {
+    "field": "description of field-specific error"
+  }
+}
+```
+
+## Best Practices
+
+- Use specific exception types instead of generic exceptions
+- Include contextual information in error messages
+- Log exceptions at appropriate severity levels
+- Implement graceful degradation for non-critical services
+- Centralize error handling logic
+- Ensure errors are observable via monitoring system

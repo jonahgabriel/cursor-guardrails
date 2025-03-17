@@ -1,0 +1,43 @@
+---
+description: Rules for monitoring, metrics, logging, and observability
+globs: ["**/*.py", "**/prometheus.yml", "**/logging.conf"]
+alwaysApply: true
+---
+
+# Monitoring Rules
+
+## Metrics
+
+- Required: true
+- Format: prometheus
+- Required metrics:
+  - requests_total
+  - request_duration
+  - errors_total
+
+## Logging
+
+- Level: INFO
+- Format: json
+- Required imports:
+  - structlog
+  - logging
+
+## Tracing
+
+- Required: true
+- Format: opentelemetry
+
+## Foundation Monitoring
+
+- Message flow tracking
+- Channel performance metrics
+- Queue depth monitoring
+- Delivery latency tracking
+
+## Observability
+
+- Standardized metrics across services
+- Centralized logging
+- Health check endpoints
+- Performance dashboards

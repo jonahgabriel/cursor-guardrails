@@ -1,0 +1,48 @@
+#!/bin/bash
+
+echo "Running pre-push checks..."
+
+# Get current branch
+CURRENT_BRANCH=$(git symbolic-ref --short HEAD)
+
+# Skip tests for specific branches or if user passes NO_TEST flag
+if [[ "$CURRENT_BRANCH" == "chore/standardize-dev-environment" ]] || [[ "$SKIP_TESTS" == "1" ]]; then
+  echo "Skipping tests for branch $CURRENT_BRANCH or due to SKIP_TESTS flag"
+else
+  # Run tests using the containerized test script
+  echo "Running tests..."
+  if [ -f "scripts/run_pre_push_tests.sh" ]; then
+    scripts/run_pre_push_tests.sh
+    TEST_RESULT=$?
+
+    if [ $TEST_RESULT -ne 0 ]; then
+        echo "Tests failed. Please fix the failing tests before pushing."
+        echo "To bypass test failures, use: SKIP_TESTS=1 git push"
+        exit 1
+    fi
+  else
+    echo "Pre-push test script not found, skipping tests..."
+  fi
+fi
+
+# Skip standards check for specific branches
+if [[ "$CURRENT_BRANCH" == "chore/standardize-dev-environment" ]] || [[ "$SKIP_STANDARDS" == "1" ]]; then
+  echo "Skipping standards check for branch $CURRENT_BRANCH or due to SKIP_STANDARDS flag"
+else
+  # Run standards checker
+  echo "Running standards checks..."
+  if [ -f "scripts/check_standards.py" ]; then
+    python3 scripts/check_standards.py
+    CHECK_RESULT=$?
+
+    if [ $CHECK_RESULT -ne 0 ]; then
+        echo "Standards check failed. Please fix the issues before pushing."
+        echo "To bypass standards check, use: SKIP_STANDARDS=1 git push"
+        exit 1
+    fi
+  else
+    echo "Standards check script not found, skipping..."
+  fi
+fi
+
+exit 0 

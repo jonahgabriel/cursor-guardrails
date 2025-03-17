@@ -1,0 +1,62 @@
+---
+description: Rules for troubleshooting, debugging, and issue resolution
+globs: ["docs/troubleshooting/*.md"]
+alwaysApply: true
+---
+
+# Troubleshooting Rules
+
+## Required Sections
+
+All troubleshooting documents must include:
+- **Issue Description**: Clear explanation of the problem
+- **Current State**: What's happening now
+- **Expected Behavior**: What should be happening
+- **Environment**: System information, versions, etc.
+- **Attempted Solutions**: What has been tried
+- **Next Steps**: Planned actions to resolve
+- **Resolution**: How the issue was fixed (when resolved)
+
+## File Patterns
+
+- All troubleshooting files must be in docs/troubleshooting/*.md
+- Naming convention: `ISSUE_TYPE-BRIEF_DESCRIPTION.md`
+- Example: `DATABASE-CONNECTION_TIMEOUT.md`
+
+## Documentation Standards
+
+- Include specific error messages with exact text
+- Document all steps to reproduce issues
+- Include system information when relevant (OS, versions, etc.)
+- Document both symptoms and root causes
+- Provide verification steps for solutions
+- Cross-reference related issues
+- Include code snippets when applicable
+- Add timestamps for ongoing issues
+
+## Common Troubleshooting Patterns
+
+### Database Issues
+- Check connection strings
+- Verify credentials
+- Test database connectivity
+- Check for schema changes
+
+### API Issues
+- Verify endpoint URLs
+- Check request/response formats
+- Validate authentication
+- Test with curl or Postman
+
+### Container Issues
+- Check container logs
+- Verify resource limits
+- Ensure ports are mapped correctly
+- Check for networking issues
+
+## Debugging Tools
+
+- Use `python run_tests.py [container_name] --debug` for detailed logs
+- Enable debug logging with `LOG_LEVEL=DEBUG`
+- Use container inspection: `docker inspect [container_name]`
+- Check application logs: `docker logs [container_name]`

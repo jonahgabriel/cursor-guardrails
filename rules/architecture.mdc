@@ -1,0 +1,52 @@
+---
+description: Rules for system architecture and service communication
+globs: ["**/*.py", "**/docker-compose.yml", "**/config/*.json"]
+alwaysApply: true
+---
+
+# Architecture Rules
+
+## Service Communication
+
+### Required Communication Patterns
+- redis_streams (current implementation)
+- kafka_streams (planned for high-volume channels)
+
+### Banned Practices
+- direct_imports between services
+- shared_code_mounting
+- direct database access between services
+
+### Message Channel Structure
+- `agent.<agent-name>.commands` - For direct commands to specific agents
+- `agent.<agent-name>.events` - For events emitted by specific agents
+- `system.events` - For system-wide broadcasts
+- `system.deadletter` - For messages that failed to process
+
+### Communication Patterns
+- Request-response pattern
+- Pub-sub events
+- Broadcast messages
+- Direct commands
+
+### Rules
+- All inter-service communication must use message streams
+- Each service must be independent with its own codebase
+- Use foundation MessageBus client for all messaging
+- Implement proper schema validation for messages
+- Handle dead letter scenarios and failed message processing
+
+## Node Framework Requirements
+
+- All services must implement the Node interface:
+  ```
+  initialize(): Promise<void>
+  start(): Promise<void>
+  stop(): Promise<void>
+  getHealth(): NodeHealth
+  getMetrics(): NodeMetrics
+  handleMessage(message: Message): Promise<void>
+  ```
+- Services must report health status
+- Services must consume configuration from central config system
+- Services must implement proper resource management

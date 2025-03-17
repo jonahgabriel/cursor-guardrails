@@ -1,0 +1,43 @@
+---
+description: Rules for file creation, modification, and organization
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# File Management Rules
+
+## Creation
+
+- Check standardization guidelines before creating files
+- Verify no duplicate functionality exists
+- Match existing file formats
+
+## Imports
+
+- Verify package structure before adding imports
+- Follow import ordering standards:
+  1. Standard library imports
+  2. Third-party imports
+  3. First-party imports (foundation.*)
+  4. Local imports (relative)
+
+## Modification
+
+- Preserve existing file format
+- Update related files when changing functionality:
+  - Update tests
+  - Update documentation
+  - Update dependent modules
+  - Update configuration files
+
+## Directory Management
+
+- Follow standardization guidelines for directory structure
+- Verify directory purpose
+- Maintain consistent directory hierarchy
+- Include required base files (README.md, __init__.py)
+
+## Validation
+
+- Run pre-creation checks before creating new files
+- Maintain consistency during updates

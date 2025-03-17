@@ -1,0 +1,35 @@
+---
+description: Rules for database access, migrations, and transactions
+globs: ["**/models.py", "**/*repository.py", "**/migrations/**"]
+alwaysApply: true
+---
+
+# Database Rules
+
+## Migrations
+
+- Tool: alembic
+- Auto generate: true
+
+## Connections
+
+- Pooling: required
+- Retry: required
+
+## Transactions
+
+- Isolation level: read_committed
+
+## Connection Pooling Optimization
+
+- Use appropriate pool sizes
+- Implement connection recycling
+- Configure timeouts
+- Use connection verification
+
+## Query Optimization
+
+- Implement statement caching
+- Use batched operations for bulk processing
+- Implement efficient pagination
+- Avoid N+1 query problems

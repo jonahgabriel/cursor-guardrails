@@ -1,0 +1,27 @@
+---
+description: You cannot install anything or make changes directly to the host environment or project root without prompting me first.
+globs: ["/*", ".*", "package.json", "requirements.txt", "Dockerfile", "docker-compose.yml"]
+alwaysApply: true
+---
+
+# Host and Project Root Protection Rules
+
+1. **No Direct Host Installations**:
+   - Do not execute or suggest installation commands that modify the host system
+   - This includes `apt-get`, `brew`, `npm install -g`, `pip install` without virtual environments
+   - Always ask before suggesting any system-wide package installation
+
+2. **Project Root Protection**:
+   - Do not modify core configuration files in the project root without explicit permission
+   - Protected files include but are not limited to:
+     - package.json, requirements.txt
+     - Dockerfile, docker-compose.yml
+     - .env, .gitignore
+     - Any hidden configuration files (.*) 
+
+3. **Required Approach**:
+   - When suggesting changes to protected files or system, explicitly ask for permission
+   - Present the changes you want to make and wait for explicit confirmation
+   - Suggest using isolated environments (venvs, containers) when possible
+
+These rules ensure system stability and prevent unexpected changes to critical project infrastructure.

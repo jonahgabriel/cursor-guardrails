@@ -1,0 +1,64 @@
+---
+description: Rules for documentation, comments, and API references
+globs: ["**/*.md", "**/*.py"]
+alwaysApply: true
+---
+
+# Documentation Rules
+
+## Required Documentation Files
+
+- README.md in project root and each container
+- CONTRIBUTING.md for contribution guidelines
+- CHANGELOG.md for version history
+
+## Strategic Documentation Types
+
+- Block documentation (e.g., BLOCK1_FOUNDATION.md)
+  - Must include Overview, Components, Implementation Status, and Integration Points
+  - Use checkboxes [x] for completed items, [ ] for pending items
+  - Document specific Next Steps and Roadmap
+
+- Strategy documents (e.g., LLM_TRAINING_STRATEGY.md, OPTIMIZATION_STRATEGY.md)
+  - Must include Overview, Objectives, and Implementation Details
+  - Should include concrete code examples where relevant
+  - Must align with technical implementation
+
+- Planning documents (e.g., GTM_PLAN.md)
+  - Must include phased approach with clear timelines
+  - Include measurable goals and KPIs
+  - Document resource requirements
+
+## Code Documentation
+
+- Python docstrings:
+  - Use Google style docstrings
+  - Required sections: Args, Returns, Raises, Examples
+  - Use type hints in all function signatures
+
+- Special docstring annotations:
+  ```python
+  /**
+   * @docCategory Foundation
+   * @implementationStatus complete
+   * @integrates Block2, Block5
+   * 
+   * Service responsible for message routing between nodes.
+   */
+  ```
+
+## Documentation Organization
+
+- docs/ - Root documentation directory
+  - Block documentation (BLOCK*_*.md)
+  - Strategy documents (*_STRATEGY.md, *_PLAN.md)
+  - development/ - Development guidelines
+  - api/ - API documentation
+
+## Formatting Standards
+
+- Line length: 120 characters maximum
+- Code blocks must specify language
+- Use relative links for cross-references
+- Tables must have headers and proper alignment
+- Document all acronyms on first use

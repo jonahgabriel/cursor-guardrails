@@ -1,0 +1,110 @@
+#!/bin/bash
+
+# Get the absolute path to the project root
+PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+export PROJECT_ROOT
+
+# Flag to control overall validation (set to "0" to disable all checks)
+VALIDATE_ENABLED=${VALIDATE_ENABLED:-0}
+
+# List of containers to validate (space-separated)
+# By default, only validate dev-environment
+VALIDATE_CONTAINERS=${VALIDATE_CONTAINERS:-"dev-environment foundation litellm haystack-mcp"}
+
+# Get list of staged Python files
+STAGED_PY_FILES=$(git diff --cached --name-only --diff-filter=d | grep ".py$" || true)
+if [ -n "$STAGED_PY_FILES" ] && [ "$VALIDATE_ENABLED" -eq 1 ]; then
+    echo "Processing staged Python files in approved containers..."
+    
+    # Create a temporary file to store approved files
+    APPROVED_FILES_TEMP=$(mktemp)
+    
+    for file in $STAGED_PY_FILES; do
+        # Extract container name from file path
+        container_path=$(echo "$file" | grep -o "containers/[^/]*" || echo "")
+        if [ -n "$container_path" ]; then
+            container_name=$(echo "$container_path" | cut -d'/' -f2)
+            
+            # Check if this container is in the approved list
+            if [[ " $VALIDATE_CONTAINERS " == *" $container_name "* ]]; then
+                echo "Processing $file (in approved container: $container_name)"
+                
+                # Run a quick syntax check before attempting to format
+                python3 -m py_compile "$PROJECT_ROOT/$file" 2>/dev/null
+                if [ $? -ne 0 ]; then
+                    echo "⚠️ Syntax error in $file. Skipping formatting."
+                    echo "Please fix the syntax errors before committing."
+                    exit 1
+                fi
+                
+                # Add to list of approved files for bulk formatting later
+                echo "$PROJECT_ROOT/$file" >> "$APPROVED_FILES_TEMP"
+                
+                # Run import standardization
+                python3 "$PROJECT_ROOT/scripts/standardize_imports.py" "$PROJECT_ROOT/$(dirname "$file")"
+                git add "$PROJECT_ROOT/$file"
+            else
+                echo "Skipping $file (not in approved container list)"
+            fi
+        else
+            echo "Skipping $file (not in a container)"
+        fi
+    done
+    
+    # Run black on all approved files at once for better performance
+    if [ -s "$APPROVED_FILES_TEMP" ]; then
+        echo "Running Black formatter on modified files in approved containers..."
+        cat "$APPROVED_FILES_TEMP" | xargs black --quiet --timeout 5
+        
+        # Run isort on all approved files
+        echo "Running isort on modified files in approved containers..."
+        cat "$APPROVED_FILES_TEMP" | xargs isort --profile black
+        
+        # Add all formatted files back to staging
+        cat "$APPROVED_FILES_TEMP" | xargs git add
+    fi
+    
+    # Clean up temp file
+    rm "$APPROVED_FILES_TEMP"
+else
+    if [ -n "$STAGED_PY_FILES" ]; then
+        echo "Skipping Python file processing (VALIDATE_ENABLED=0)"
+    fi
+fi
+
+# Container validation
+if [ "$VALIDATE_ENABLED" -eq 1 ]; then
+    echo "Running container validation on approved containers: $VALIDATE_CONTAINERS"
+    for container_name in $VALIDATE_CONTAINERS; do
+        container_path="$PROJECT_ROOT/containers/$container_name"
+        
+        if [ -d "$container_path" ]; then
+            echo "Validating approved container: $container_name"
+            python3 "$PROJECT_ROOT/scripts/validators/container_validator.py" "$container_path"
+            if [ $? -ne 0 ]; then
+                echo "Container validation failed for $container_name."
+                echo "You can bypass validation with: VALIDATE_ENABLED=0 git commit ..."
+                exit 1
+            fi
+        else
+            echo "Warning: Container $container_name not found at $container_path"
+        fi
+    done
+else
+    echo "Skipping container validation (VALIDATE_ENABLED=0)"
+fi
+
+# Skip the pre-commit hooks from pre-commit framework as we've handled them directly
+SKIP=black,isort
+export SKIP
+
+# Print help message for enabling validation
+echo ""
+echo "=== Pre-Commit Hook Info ==="
+echo "• Validation is currently disabled by default (VALIDATE_ENABLED=0)"
+echo "• To enable validation: VALIDATE_ENABLED=1 git commit ..."
+echo "• To specify containers: VALIDATE_ENABLED=1 VALIDATE_CONTAINERS=\"dev-environment foundation\" git commit ..."
+echo "• Currently approved containers: $VALIDATE_CONTAINERS"
+echo "============================="
+
+exit 0

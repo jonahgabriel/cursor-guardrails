@@ -1,0 +1,34 @@
+---
+description: Rules for modifying code and indicating changes
+globs: ["**/*.py", "**/*.ts", "**/*.js", "**/*.md"]
+alwaysApply: true
+---
+
+# Code Modification Rules
+
+## Markers
+
+- Use '// ... existing code ...' to indicate unchanged sections
+- Never omit markers when skipping code sections
+
+## Line References
+
+- Format: :endLine:filepath
+- Severity: error
+
+## Context
+
+- Include only necessary surrounding lines for context
+- Verify all necessary imports are included
+
+## Directory Structure
+
+- Check directory tree template before creating new files or directories
+- Verify file location matches component type
+- Maintain consistent directory hierarchy
+
+## File Creation
+
+- Check for duplicate files before creation
+- Use file_search tool before creating new files
+- Follow naming conventions

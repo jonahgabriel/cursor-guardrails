@@ -1,0 +1,24 @@
+---
+description: Rules for git usage, branch naming, and commit messages
+globs: [".git/**", ".github/**", ".gitignore"]
+alwaysApply: true
+---
+
+# Git Rules
+
+## Branch Naming
+
+- Pattern: (feature|bugfix|hotfix|chore)/{ticket}-{description}
+- Example: feature/AI-123-add-new-endpoint
+
+## Commit Messages
+
+- Format: type(scope): description
+- Types: feat, fix, docs, style, refactor, test, chore
+- Max length: 72 characters
+
+## Hooks
+
+- Required hooks:
+  - pre-commit
+  - pre-push

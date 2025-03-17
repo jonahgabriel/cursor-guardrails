@@ -1,0 +1,66 @@
+---
+description: Rules for API design, versioning, and response formats
+globs: ["**/api/**/*.py", "**/*controller.py", "**/openapi.yml"]
+alwaysApply: true
+---
+
+# API Rules
+
+## External API Compatibility
+
+### General Rules
+- NEVER modify external API request/response formats
+- Preserve ALL fields exactly as received
+- Match response format precisely to the external API spec
+- Forward all headers without modification
+- Preserve exact ID formats and values
+
+### MCP API Compatibility
+- Preserve request ID exactly as received (from query params, headers, or body)
+- Match OpenAI-style streaming format precisely
+- Return exact model names as provided by upstream
+- Preserve all metadata fields
+
+## Versioning
+
+- Required: true
+- Format: url (e.g., /v1/resource)
+
+## Response Format
+
+### Internal API Success
+{
+  "status": true,
+  "data": {}
+}
+
+### Internal API Error
+{
+  "status": false,
+  "error": "error_code",
+  "message": "Human readable message"
+}
+
+### External API Responses
+- Must match external API spec exactly
+- No modification of response structure
+- Preserve all fields and formats
+- Forward status codes unchanged
+
+## Rate Limiting
+
+- Required: true
+- Headers:
+  - X-RateLimit-Limit
+  - X-RateLimit-Remaining
+  - X-RateLimit-Reset
+
+## Required Endpoints
+
+- /health
+- /version
+
+## Documentation
+
+- Format: openapi
+- Version: 3.0.0

@@ -1,0 +1,36 @@
+---
+description: Rules for development tools, IDE settings, and utility scripts
+globs: [".vscode/**", "**/.editorconfig", "**/scripts/**"]
+alwaysApply: true
+---
+
+# Development Tools Rules
+
+## VSCode
+
+### Settings
+
+{
+  "python.linting.enabled": true,
+  "python.formatting.provider": "black",
+  "editor.formatOnSave": true
+}
+
+
+## Auto Fixes
+
+### On Save
+- remove_unused_imports
+- sort_imports
+- format_code
+
+## Custom Commands
+
+- **check-standards**: `python scripts/check_standards.py`
+  - Description: Check compliance with coding standards
+
+- **create-service**: `python scripts/create_service.py`
+  - Description: Create a new service from template
+
+- **update-docs**: `python scripts/update_docs.py`
+  - Description: Update service documentation

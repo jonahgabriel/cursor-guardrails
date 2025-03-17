@@ -1,0 +1,132 @@
+---
+description: Rules for standardized dependency management using Poetry across all containers
+globs: ["**/pyproject.toml", "**/requirements.txt", "**/setup.py", "**/Dockerfile", "**/poetry.lock"]
+alwaysApply: true
+---
+
+# Poetry Enforcement Rules
+
+## Required Structure
+
+- All Python packages must use Poetry for dependency management
+- Each container must have a `pyproject.toml` file in its root directory
+- No `requirements.txt` or `setup.py` files are allowed
+
+## pyproject.toml Requirements
+
+- Must include complete project metadata:
+  ```toml
+  [tool.poetry]
+  name = "container-name"
+  version = "0.1.0"
+  description = "Container purpose description"
+  authors = ["Your Name <your.email@example.com>"]
+  readme = "README.md"
+  ```
+
+- Dependencies must specify version constraints:
+  ```toml
+  [tool.poetry.dependencies]
+  python = ">=3.11,<3.12"
+  redis = "^4.5.1"
+  pydantic = "^2.0.0"
+  ```
+
+- Must include development dependencies separately:
+  ```toml
+  [tool.poetry.group.dev.dependencies]
+  pytest = "^8.3.4"
+  pytest-asyncio = "^0.25.3"
+  black = "^23.3.0"
+  ```
+
+## Docker Integration
+
+- Dockerfiles must install and use Poetry:
+  ```dockerfile
+  # Install Poetry
+  RUN curl -sSL https://install.python-poetry.org | python3 -
+  ENV PATH="$POETRY_HOME/bin:$PATH"
+  
+  # Copy Poetry configuration (use relative paths)
+  COPY pyproject.toml poetry.lock* ./
+  
+  # Install dependencies
+  RUN poetry config virtualenvs.create false && \
+      poetry install --no-interaction --no-ansi
+  
+  # Copy source code (use relative paths)
+  COPY src/ ./src/
+  ```
+
+## CI/CD Integration
+
+- All CI/CD pipelines must use Poetry for dependency installation
+- Cache Poetry dependencies between CI runs
+- Validate pyproject.toml format in CI
+
+## Testing
+
+- Run tests using Poetry:
+  ```bash
+  poetry run pytest tests/
+  ```
+
+- Container-specific test commands:
+  ```python
+  cmd = [
+      "bash", "-c",
+      f"cd /app/containers/{container} && "
+      f"poetry run pytest {test_path_arg} -v"
+  ]
+  ```
+
+## Version Management
+
+- Use `poetry update` for controlled dependency updates (updates all dependencies to their latest allowed versions)
+- Use `poetry update package-name` to update a specific package
+- Use `poetry lock --no-update` to regenerate the lock file without updating dependency versions
+- Always commit `poetry.lock` to version control
+- Document major dependency changes in CHANGELOG.md
+
+### Lock File Management
+
+```bash
+# Regenerate lock file without updating dependencies (recommended for reproducibility)
+poetry lock --no-update
+
+# Update all dependencies and regenerate lock file
+poetry update
+
+# Update specific package(s) and regenerate lock file
+poetry update requests pytest
+
+# Add a new dependency and update lock file
+poetry add pydantic-settings
+```
+
+## Migration Guidelines
+
+- For containers using requirements.txt:
+  1. Run `poetry init` in the container directory
+  2. Add dependencies with `poetry add package-name`
+  3. Add dev dependencies with `poetry add --group dev package-name`
+  4. Remove requirements.txt after verification
+  
+- For containers using setup.py:
+  1. Extract metadata and dependencies from setup.py
+  2. Create equivalent pyproject.toml with Poetry format
+  3. Verify installation works with Poetry
+  4. Remove setup.py after verification
+
+## Docker Build Context
+
+When building Docker images, set the build context to the service directory:
+
+```bash
+# Build from the service directory (correct)
+docker build -t service-name:latest containers/service-name
+
+# Not recommended (requires absolute paths in Dockerfile)
+docker build -t service-name:latest -f containers/service-name/Dockerfile .
+```

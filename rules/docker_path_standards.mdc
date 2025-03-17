@@ -1,0 +1,72 @@
+---
+description: Rules for Docker path standards and build context usage
+globs: ["**/Dockerfile*", "**/docker-compose*.yml"]
+alwaysApply: true
+---
+
+# Docker Path Standards
+
+## Relative Paths in Dockerfiles
+
+Always use relative paths in Dockerfile `COPY` and `ADD` commands. This ensures that the Dockerfile works correctly regardless of the build context.
+
+✅ **Correct**:
+```dockerfile
+COPY pyproject.toml ./
+COPY src/ ./src/
+```
+
+❌ **Incorrect**:
+```dockerfile
+COPY containers/service-name/pyproject.toml ./
+COPY containers/service-name/src/ ./src/
+```
+
+## Build Context
+
+When building Docker images, set the build context to the directory containing the files to be copied into the image:
+
+```bash
+# Correct (build from the service directory)
+docker build -t service-name:latest containers/service-name
+
+# Incorrect (requires absolute paths in Dockerfile)
+docker build -t service-name:latest -f containers/service-name/Dockerfile .
+```
+
+## Working Directory
+
+Set the working directory to `/app` for consistency across all services:
+
+```dockerfile
+WORKDIR /app
+```
+
+## Entrypoint and Command
+
+For clarity and flexibility, separate the `ENTRYPOINT` and `CMD` instructions:
+
+```dockerfile
+ENTRYPOINT ["poetry", "run"]
+CMD ["uvicorn", "service_name.main:app", "--host", "0.0.0.0", "--port", "8000"]
+```
+
+## System Dependencies
+
+When installing system dependencies, always use `--no-install-recommends` and clean up the apt cache:
+
+```dockerfile
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+```
+
+## Validation
+
+The Dockerfile validator script (`scripts/validators/dockerfile_validator.py`) checks for compliance with these standards. It will flag any absolute paths in `COPY` commands and suggest corrections.
+
+## Documentation
+
+For more detailed information, refer to the Docker path standards documentation:
+`docs/standards/docker/DOCKER_PATH_STANDARDS.md` 

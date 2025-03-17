@@ -1,0 +1,107 @@
+---
+description: Rules for development environment, containerization, and command usage
+globs: ["**/devenv.sh", "**/dev", "docker-compose*.yml", "Dockerfile"]
+alwaysApply: true
+---
+
+# Development Environment Rules
+
+## Core Principles
+
+- All development work MUST be done inside containers
+- Never install dependencies or run commands directly on host system
+- Use `./dev` script for ALL container and development operations
+- Maintain consistent environment across all developers
+
+## Container Usage
+
+- Always use ./dev script in project root for all development commands
+- Exception: Test execution should use run_tests.py directly as documented in testing.mdc
+- All development work must be done inside the dev container
+- Use ./dev shell for interactive development sessions
+
+## Standard Commands
+
+### Environment Management
+```bash
+./dev build    # Build all development containers
+./dev start    # Start the development environment
+./dev stop     # Stop the development environment
+./dev shell    # Access development shell
+./dev clean    # Clean up environment
+```
+
+### Development Operations
+```bash
+./dev format   # Format code
+./dev lint     # Run linting
+./dev docs     # Generate documentation
+```
+
+### Testing Commands
+Development Testing:
+```bash
+./dev test:unit     # Run unit tests during development
+./dev test:int      # Run integration tests
+./dev test:e2e      # Run end-to-end tests
+./dev test:cov      # Run tests with coverage
+```
+
+CI/CD Testing:
+```bash
+python run_tests.py [container] --type unit
+python run_tests.py [container] --type integration
+python run_tests.py [container] --type e2e
+```
+
+## Environment Structure
+```
+containers/
+├── dev-environment/     # Development container configuration
+│   ├── Dockerfile      # Dev container definition
+│   ├── pyproject.toml  # Dev dependencies only
+│   └── docker-compose.dev.yml
+└── [service]/          # Service containers
+    ├── Dockerfile      # Service-specific container
+    └── pyproject.toml  # Service-specific dependencies
+```
+
+## Environment Setup
+
+- Use devenv.sh script for environment setup
+- All development commands (except testing) must be run through ./dev script
+- Environment variables are set automatically by dev script:
+  - PROJECT_ROOT
+  - PYTHONPATH: "/app"
+  - ENV: "development"
+
+## Dependency Management
+
+- Use Poetry EXCLUSIVELY for Python dependency management
+- Each container must have its own pyproject.toml
+- No requirements.txt or setup.py files allowed
+- Dev container includes all development tools
+
+## Service Integration
+
+- Development container must have access to all services
+- Use consistent network configuration (ai-platform-net)
+- Implement health checks for all services
+- Use proper container naming conventions
+
+## Protected Operations
+
+- Changes to docker-compose files require review
+- Environment variable changes must be documented
+- Core configuration changes need explicit approval
+- Container modifications must follow docker_path_standards.mdc
+
+## Development Container Features
+
+- Pre-configured development tools
+- Consistent Python version (3.11)
+- Mounted source code volumes
+- Shared development network
+- Automated code formatting
+- Integrated testing tools
+- Documentation generation
